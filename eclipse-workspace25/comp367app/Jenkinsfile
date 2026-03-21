@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    tools {
+        maven "Maven"
+    }
+    environment {
+        DOCKERHUB_PWD = credentials('CredentialID_DockerHubPWD')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/Aziz2534Cen/comp367app-.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('eclipse-workspace25/comp367app') {
+                    bat 'mvn clean package'
+                }
+            }
+        }
+        stage('Docker build') {
+            steps {
+                script {
+                    dir('eclipse-workspace25/comp367app') {
+                        bat 'docker build -t aziz2534cen/comp367app:1.0 .'
+                    }
+                }
+            }
+        }
+        stage('Docker login') {
+            steps {
+                script {
+                    bat "docker login -u aziz2534cen -p ${DOCKERHUB_PWD}"
+                }
+            }
+        }
+        stage('Docker push') {
+            steps {
+                script {
+                    bat 'docker push aziz2534cen/comp367app:1.0'
+                }
+            }
+        }
+    }
+}
