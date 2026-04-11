@@ -19,6 +19,13 @@ pipeline {
                 }
             }
         }
+        stage('Unit Test') {
+            steps {
+                dir('eclipse-workspace25/comp367app') {
+                    bat 'mvn test'
+                }
+            }
+        }
         stage('Docker build') {
             steps {
                 script {
@@ -39,6 +46,34 @@ pipeline {
             steps {
                 script {
                     bat 'docker push aziz2534/comp367app:1.0'
+                }
+            }
+        }
+        stage('Deploy to Dev') {
+            steps {
+                script {
+                    bat 'docker run -d -p 9092:8080 aziz2534/comp367app:1.0'
+                }
+            }
+        }
+        stage('Deploy to QAT') {
+            steps {
+                script {
+                    bat 'echo Deploying to QAT environment'
+                }
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                script {
+                    bat 'echo Deploying to Staging environment'
+                }
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                script {
+                    bat 'echo Deploying to Production environment'
                 }
             }
         }
